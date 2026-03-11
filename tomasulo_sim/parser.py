@@ -1,5 +1,14 @@
 import re
 from instruction import Instruction
+"""
+parses the input  file
+
+The input file contains memory initialization values and RISC-V assembly instructions
+
+The parser extracts the initial memory contents, instructions and branch labels
+
+Returned to the CPU simulator for execution
+"""
 
 
 def parse_file(filename):

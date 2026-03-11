@@ -1,3 +1,13 @@
+
+"""
+sim.py
+
+Main entry point for the Tomasulo CPU simulator.
+
+This script: loads input program, initializes  CPU, runs the simulation, prints results
+
+It also runs the bonus experiments by varying instruction queue size (NI) & reservation station counts
+"""
 import sys
 from parser import parse_file
 from cpu import TomasuloCPU

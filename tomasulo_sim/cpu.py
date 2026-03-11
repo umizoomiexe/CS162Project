@@ -3,7 +3,21 @@ from logging import config
 from reservation_station import RSEntry
 from constantspython import *
 from instruction import Instruction
+"""
+cpu.py
 
+This file implements the main TomasuloCPU simulator for the project. The CPU models a dynamically 
+scheduled processor that executes a subset of RISC-V
+instructions using Tomasulo’s algorithm. The simulator includes reservation stations, a register alias
+table for register renaming,and a single commondata bus for result forwarding.
+
+Each cycle of the simulation performs the stages of writeback, execute, issue, and fetch. Instructions are issued to reservation stations when
+available and execute once their operands are ready. Results are broadcast on the common data bus so dependent instructions can receive forwarded
+values immediately.
+
+The simulator tracks execution cycles, structural stalls, register values,
+and memory state to verify functional and timing correctness of the architecture.
+"""
 class TomasuloCPU:
 
     def __init__(self, memory, program, labels, config):

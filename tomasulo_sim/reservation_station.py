@@ -1,7 +1,14 @@
 from dataclasses import dataclass
 from typing import Optional
 from instruction import Instruction
+"""
+Defines the Reservation Station entry used by the Tomasulo algorithm.\
 
+Reservation stations are used to hold instructions waiting for operands
+or execution. Each entry tracks: operation type, operand values,dependency tags,execution statu, destination register
+Reservation stations enable out-of-order execution while maintaining
+correct data dependencies.
+"""
 
 @dataclass
 class RSEntry:
