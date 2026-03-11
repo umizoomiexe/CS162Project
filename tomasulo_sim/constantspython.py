@@ -1,9 +1,16 @@
-INT_RS = 4
-LS_RS = 3
-FPADD_RS = 3
-FPMUL_RS = 2
-FPDIV_RS = 1
-BU_RS = 1
+DEFAULT_CONFIG = {
+
+    "NI": 1,
+
+    "RS": {
+        "INT": 4,
+        "LS": 3,
+        "FPADD": 3,
+        "FPMUL": 2,
+        "FPDIV": 1,
+        "BU": 1
+    }
+}
 
 LATENCY = {
     "INT": 1,

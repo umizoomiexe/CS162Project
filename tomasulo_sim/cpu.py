@@ -1,11 +1,12 @@
+from logging import config
+
 from reservation_station import RSEntry
 from constantspython import *
 from instruction import Instruction
 
-
 class TomasuloCPU:
 
-    def __init__(self, memory, program, labels):
+    def __init__(self, memory, program, labels, config):
 
         self.memory = memory
         self.program = program
@@ -20,19 +21,16 @@ class TomasuloCPU:
 
         self.pc = 0
         self.cycle = 0
-        self.decode_buffer = None
+        self.decode_buffer = []
         self.fetch_stall = False
 
         self.issue_counter = 1
         self.stall_events = 0
-
+        self.NI = config["NI"]
+        rs_cfg = config["RS"]
         self.rs = {
-            "INT":[RSEntry(f"INT{i}","INT") for i in range(INT_RS)],
-            "LS":[RSEntry(f"LS{i}","LS") for i in range(LS_RS)],
-            "FPADD":[RSEntry(f"FPADD{i}","FPADD") for i in range(FPADD_RS)],
-            "FPMUL":[RSEntry(f"FPMUL{i}","FPMUL") for i in range(FPMUL_RS)],
-            "FPDIV":[RSEntry("FPDIV0","FPDIV")],
-            "BU":[RSEntry("BU0","BU")]
+            unit: [RSEntry(f"{unit}{i}", unit) for i in range(count)]
+            for unit, count in rs_cfg.items()
         }
 
     def reg_read(self, reg):
@@ -49,17 +47,20 @@ class TomasuloCPU:
             self.int_regs[reg]=int(val)
         else:
             self.fp_regs[reg]=float(val)
-
     def fetch(self):
 
-        if self.decode_buffer or self.fetch_stall:
+        if len(self.decode_buffer) >= self.NI:
+            return
+
+        if self.fetch_stall:
             return
 
         if self.pc >= len(self.program):
             return
 
         inst = self.program[self.pc]
-        self.decode_buffer = inst
+
+        self.decode_buffer.append(inst)
         self.pc += 1
 
         if inst.op == "bne":
@@ -77,7 +78,7 @@ class TomasuloCPU:
         if not self.decode_buffer:
             return
 
-        inst = self.decode_buffer
+        inst = self.decode_buffer[0]
         unit = UNIT_FOR_OP[inst.op]
 
         rs = self.get_free_rs(unit)
@@ -158,12 +159,11 @@ class TomasuloCPU:
                 else:
                     rs.Vk = self.reg_read(inst.rs2)
         self.debug_events["issued"] = f"{rs.name} <= {inst.raw}"
-        self.decode_buffer=None
+        self.decode_buffer.pop(0)
 
     def set_operand(self, rs, which, reg):
 
         tag = self.rat[reg]
-
         if tag:
             if which == "j":
                 rs.Qj = tag
